@@ -1,20 +1,32 @@
 import React from "react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { loginCaptain, clearCaptainError } from "../store/captainSlice";
 
 const CaptianLogin = () => {
-  const [email, setemail] = useState("");
-  const [password, setpassword] = useState();
-  const [captianData, setcaptianData] = useState({});
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { isLoading, error } = useSelector((state) => state.captain);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setcaptianData({
-      email: email,
-      password: password,
-    });
-    setemail("");
-    setpassword("");
+    try {
+      const resultAction = await dispatch(loginCaptain({ email, password }));
+      if (loginCaptain.fulfilled.match(resultAction)) {
+        navigate('/captain/home'); // Redirect to captain dashboard
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  };
+
+  const handleInputChange = () => {
+    if (error) {
+      dispatch(clearCaptainError());
+    }
   };
 
   return (
@@ -31,15 +43,16 @@ const CaptianLogin = () => {
             handleSubmit(e);
           }}
         >
-          <h3 className="text-lg mb-2 font-medium">What's Your phone number</h3>
+          <h3 className="text-lg mb-2 font-medium">Captain Email</h3>
           <input
             className="rounded px-4 py-2 mb-7 border-gray-100 w-full text-lg placeholder:text-base bg-gray-100"
             type="email"
             value={email}
             onChange={(e) => {
-              setemail(e.target.value);
+              setEmail(e.target.value);
+              handleInputChange();
             }}
-            placeholder="email@example.com"
+            placeholder="captain@example.com"
             required
           />
           <h3 className="text-lg mb-2 font-medium">Enter Password</h3>
@@ -48,13 +61,21 @@ const CaptianLogin = () => {
             type="password"
             value={password}
             onChange={(e) => {
-              setpassword(e.target.value);
+              setPassword(e.target.value);
+              handleInputChange();
             }}
             placeholder="password"
             required
           />
-          <button className="rounded px-4 py-2 mb-7 border-gray-100 w-full text-lg placeholder:text-base bg-black text-white">
-            Login
+          {error && (
+            <p className="text-red-600 text-sm mb-4">{error}</p>
+          )}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="rounded px-4 py-2 mb-7 border-gray-100 w-full text-lg placeholder:text-base bg-black text-white disabled:bg-gray-600"
+          >
+            {isLoading ? "Logging In..." : "Captain Login"}
           </button>
           <p className="text-center mb-2">
             Onboard fleet? 

@@ -1,14 +1,57 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { useRef } from "react";
 
 const Home = () => {
+  const [panelOpen, setpanelOpen] = useState(false);
+  const paneRef = useRef(null);
+
+  useGSAP(() => {
+    if (panelOpen) {
+      gsap.to(paneRef.current, {
+        height: "70vh",
+        duration: 0.5,
+        ease: "power2.inOut",
+      });
+    } else {
+      gsap.to(paneRef.current, {
+        height: "0vh",
+        duration: 0.5,
+        ease: "power2.inOut",
+      });
+    }
+  }, [panelOpen]);
   return (
     <div>
-      <div className="bg-cover bg-center bg-[url(https://images.unsplash.com/vector-1755257875948-46f857d061b2?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)] h-screen pt-8 flex bg-red-400 justify-between w--full flex-col">
-          <img className="w-25 relative left-2 -top-5" src="https://download.logo.wine/logo/Uber/Uber-Logo.wine.png" alt=""/>
-        <div className="bg-white pb-7 py-4 px-4">
-          <h2 className="text-3xl font-bold">Get Started wit Uber</h2>
-          <Link to='/login' className="flex items-center justify-center w-full bg-black text-white py-3 rounded mt-5"> Continue</Link>
+      <div className=" h-screen  pt-2 flex bg-[#1c1c1c] justify-between  w-full flex-col">
+        <div className="header flex items-start font-regular text-white justify-center text-3xl">
+          Uber
+        </div>
+        <div className="bottom-section  p-4 mt-2  rounded-t-2xl w-full flex flex-col gap-4 bg-white">
+          <div className="content flex flex-col items-center">
+            <p className="font-bold text-[#1c1c1c] text-xl">
+              Set your destination
+            </p>
+            <p className="font-regular text-lg">Drag th map to move the pin</p>
+          </div>
+          <div className="flex flex-col items-center justify-between gap-2 p-2 ">
+            <input
+              onClick={() => {
+                setpanelOpen(true);
+              }}
+              onBlur={() => {
+                setpanelOpen(false);
+              }}
+              className="bg-[#1c1c1ccc] p-2 rounded-lg w-full text-white outline-0"
+              type="text"
+              placeholder="Where to go ?"
+            />
+            <button className="bg-[#1c1c1c] capitalize text-white py-4 w-full rounded-lg font-regular text-lg">
+              confirm destination
+            </button>
+          </div>
+          <div ref={paneRef} className="bg-red-200 h-0"></div>
         </div>
       </div>
     </div>
